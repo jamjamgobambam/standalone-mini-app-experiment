@@ -1,0 +1,148 @@
+/* Adapted from kmeans.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  user-select: none;
+  position: relative;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e0e0e0;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
+.controlButton {
+  padding: 5px 12px;
+  font-size: 13px;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  background: #f5f5f5;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.controlButton:hover:not(:disabled) {
+  background: #e8e8e8;
+}
+
+.controlButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Kernel toggle group */
+.kernelToggle {
+  display: flex;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.kernelToggle .controlButton {
+  border: none;
+  border-radius: 0;
+  border-right: 1px solid #bbb;
+}
+
+.kernelToggle .controlButton:last-child {
+  border-right: none;
+}
+
+.kernelToggle .controlButton.active {
+  background: #3b82f6;
+  color: white;
+  border-color: #3b82f6;
+}
+
+.kernelToggle .controlButton.active:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+/* C parameter controls */
+.cLabel {
+  font-size: 12px;
+  color: #555;
+  white-space: nowrap;
+}
+
+.cSlider {
+  width: 90px;
+  cursor: pointer;
+  accent-color: #3b82f6;
+}
+
+.cSlider:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.cValue {
+  min-width: 38px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: #333;
+}
+
+.separator {
+  width: 1px;
+  height: 18px;
+  background: #ddd;
+  margin: 0 2px;
+  flex-shrink: 0;
+}
+
+/* SVG canvas */
+.svgCanvas {
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Training overlay */
+.trainingOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.6);
+  font-size: 14px;
+  color: #666;
+  pointer-events: none;
+}
+
+/* Status bar */
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  font-size: 12px;
+  color: #666;
+  border-top: 1px solid #e0e0e0;
+  flex-shrink: 0;
+  min-height: 24px;
+}
+
+.svBadge {
+  color: #7c3aed;
+  font-weight: 600;
+}
+
+.marginBadge {
+  color: #059669;
+}
+
+.emptyMessage {
+  color: #aaa;
+  font-style: italic;
+}

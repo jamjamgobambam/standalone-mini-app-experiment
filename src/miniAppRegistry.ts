@@ -17,6 +17,8 @@ import React from 'react';
 import {ParsedSignal} from './engine/signalParser';
 import KMeansPreview from './example-kmeans/KMeansPreview';
 import kmeansLibraryCode from './example-kmeans/python/library.py?raw';
+import SVMPreview from './example-svm/SVMPreview';
+import svmLibraryCode from './example-svm/python/library.py?raw';
 
 // The handle interface every PreviewComponent must satisfy.
 // When you create a new mini-app, its forwardRef handle must implement these.
@@ -99,6 +101,41 @@ model.add_point(6.0, 5.0)
 
 model.init()`;
 
+const SVM_DEFAULT_STUDENT_CODE = `\
+# Support Vector Machine Demo
+# Press Run to train the SVM on the labeled data below.
+# After training, use the controls to explore:
+# - Drag the C slider to see how regularization changes the margin width
+#   (small C = wide margin, large C = narrow margin / fewer violations)
+# - Toggle Linear / RBF to compare a straight boundary vs. a curved one
+# - Points circled in their class color are the support vectors
+
+from svm import SVM
+
+model = SVM(C=1.0)
+
+# Class +1: upper-right cluster
+model.add_point(2.0, 3.0, label=1)
+model.add_point(3.0, 4.0, label=1)
+model.add_point(2.5, 5.0, label=1)
+model.add_point(4.0, 3.5, label=1)
+model.add_point(1.5, 4.5, label=1)
+
+# Class -1: lower-left cluster
+model.add_point(-2.0, -1.0, label=-1)
+model.add_point(-3.0, -2.0, label=-1)
+model.add_point(-1.5, -3.0, label=-1)
+model.add_point(-2.5, -0.5, label=-1)
+model.add_point(-1.0, -2.5, label=-1)
+
+# Points near the boundary — likely to become support vectors
+model.add_point(0.5, 1.0, label=1)
+model.add_point(-0.5, -0.5, label=-1)
+model.add_point(1.0, 0.0, label=1)
+model.add_point(-1.0, 0.5, label=-1)
+
+model.fit()`;
+
 export const MINI_APP_REGISTRY: MiniAppDefinition[] = [
   {
     key: 'kmeans',
@@ -106,6 +143,13 @@ export const MINI_APP_REGISTRY: MiniAppDefinition[] = [
     PreviewComponent: KMeansPreview,
     defaultStudentCode: KMEANS_DEFAULT_STUDENT_CODE,
     defaultLibraryCode: kmeansLibraryCode,
+  },
+  {
+    key: 'svm',
+    label: 'Support Vector Machine',
+    PreviewComponent: SVMPreview,
+    defaultStudentCode: SVM_DEFAULT_STUDENT_CODE,
+    defaultLibraryCode: svmLibraryCode,
   },
   // Add new mini-apps here ↓
 ];
