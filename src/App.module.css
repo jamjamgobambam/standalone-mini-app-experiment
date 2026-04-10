@@ -1,0 +1,232 @@
+.app {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Header ── */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: #1e1e2e;
+  color: #cdd6f4;
+  border-bottom: 1px solid #313244;
+  flex-shrink: 0;
+  gap: 12px;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dropdownLabel {
+  font-size: 12px;
+  color: #a6adc8;
+}
+
+.dropdown {
+  padding: 4px 8px;
+  font-size: 13px;
+  border: 1px solid #45475a;
+  border-radius: 4px;
+  background: #313244;
+  color: #cdd6f4;
+  cursor: pointer;
+}
+
+.loadingLabel {
+  font-size: 12px;
+  color: #a6adc8;
+  font-style: italic;
+}
+
+.runButton {
+  padding: 5px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  background: #a6e3a1;
+  color: #1e1e2e;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.runButton:hover:not(:disabled) {
+  background: #94d98f;
+}
+
+.runButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ── Main content area ── */
+
+.main {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.leftPanel,
+.rightPanel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.leftPanel {
+  border-right: 1px solid #d0d0d0;
+}
+
+/* ── Bottom panel ── */
+
+.bottomPanel {
+  display: flex;
+  flex-direction: column;
+  height: 220px;
+  border-top: 2px solid #313244;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+/* ── Panel headers ── */
+
+.panelHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 4px 4px 10px;
+  background: #e8e8e8;
+  border-bottom: 1px solid #d0d0d0;
+  flex-shrink: 0;
+  min-height: 28px;
+}
+
+.panelLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #555;
+  flex-shrink: 0;
+}
+
+.panelSublabel {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #888;
+  font-size: 11px;
+  flex: 1;
+}
+
+.panelSublabel code {
+  font-family: 'Menlo', 'Monaco', 'Consolas', monospace;
+  background: #ddd;
+  padding: 1px 4px;
+  border-radius: 3px;
+}
+
+.panelActions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.panelButton {
+  padding: 2px 8px;
+  font-size: 11px;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  background: #f0f0f0;
+  color: #444;
+  cursor: pointer;
+  transition: background 0.12s;
+  white-space: nowrap;
+}
+
+.panelButton:hover {
+  background: #e0e0e0;
+}
+
+/* ── Editors (shared textarea style) ── */
+
+.editor {
+  flex: 1;
+  resize: none;
+  border: none;
+  outline: none;
+  padding: 12px 14px;
+  font-family: 'Menlo', 'Monaco', 'Consolas', 'Courier New', monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+  background: #1e1e2e;
+  color: #cdd6f4;
+  tab-size: 4;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.editor::selection {
+  background: #45475a;
+}
+
+/* ── Preview area ── */
+
+.previewArea {
+  flex: 1;
+  overflow: hidden;
+  background: #fff;
+  min-height: 0;
+}
+
+/* ── Error banner ── */
+
+.errorBanner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #f38ba8;
+  color: #1e1e2e;
+  padding: 8px 14px;
+  font-size: 12.5px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  z-index: 10;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.errorDismiss {
+  margin-left: auto;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: #1e1e2e;
+  padding: 0;
+  line-height: 1;
+}
