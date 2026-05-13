@@ -12,13 +12,15 @@
  *   4. It will appear in the dropdown immediately
  */
 
-import React from 'react';
+import React from "react";
 
-import {ParsedSignal} from './engine/signalParser';
-import KMeansPreview from './example-kmeans/KMeansPreview';
-import kmeansLibraryCode from './example-kmeans/python/library.py?raw';
-import SVMPreview from './example-svm/SVMPreview';
-import svmLibraryCode from './example-svm/python/library.py?raw';
+import { ParsedSignal } from "./engine/signalParser";
+import KMeansPreview from "./example-kmeans/KMeansPreview";
+import kmeansLibraryCode from "./example-kmeans/python/library.py?raw";
+import SVMPreview from "./example-svm/SVMPreview";
+import svmLibraryCode from "./example-svm/python/library.py?raw";
+import ThermostatPreview from "./thermostat/ThermostatPreview";
+import thermostatLibraryCode from "./thermostat/python/library.py?raw";
 
 // The handle interface every PreviewComponent must satisfy.
 // When you create a new mini-app, its forwardRef handle must implement these.
@@ -136,20 +138,55 @@ model.add_point(-1.0, 0.5, label=-1)
 
 model.fit()`;
 
+const THERMOSTAT_DEFAULT_STUDENT_CODE = `\
+# Thermostat — Hill Climbing on a Dial
+# Press Run to watch your strategy turn the thermostat dial toward the
+# temperature most people prefer. The bars around the dial show how many
+# people prefer each temperature; the highlighted bar is the dial's
+# current setting.
+#
+# Your move(current, left, right) function decides what the dial does:
+#   - current = people who prefer the current temperature
+#   - left    = people who prefer the temperature one degree cooler
+#               (0 if the dial is already at the minimum)
+#   - right   = people who prefer the temperature one degree warmer
+#               (0 if the dial is already at the maximum)
+#
+# Return "LEFT" (cooler), "RIGHT" (warmer), or "STAY" (stop here).
+
+from thermostat import run
+
+
+def move(current, left, right):
+    if left > current:
+        return "LEFT"
+    if right > current:
+        return "RIGHT"
+    return "STAY"
+
+
+run(move)`;
+
 export const MINI_APP_REGISTRY: MiniAppDefinition[] = [
   {
-    key: 'kmeans',
-    label: 'K-Means Clustering',
+    key: "kmeans",
+    label: "K-Means Clustering",
     PreviewComponent: KMeansPreview,
     defaultStudentCode: KMEANS_DEFAULT_STUDENT_CODE,
     defaultLibraryCode: kmeansLibraryCode,
   },
   {
-    key: 'svm',
-    label: 'Support Vector Machine',
+    key: "svm",
+    label: "Support Vector Machine",
     PreviewComponent: SVMPreview,
     defaultStudentCode: SVM_DEFAULT_STUDENT_CODE,
     defaultLibraryCode: svmLibraryCode,
   },
-  // Add new mini-apps here ↓
+  {
+    key: "thermostat",
+    label: "Thermostat — Hill Climbing on a Dial",
+    PreviewComponent: ThermostatPreview,
+    defaultStudentCode: THERMOSTAT_DEFAULT_STUDENT_CODE,
+    defaultLibraryCode: thermostatLibraryCode,
+  },
 ];

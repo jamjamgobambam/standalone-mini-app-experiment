@@ -1,0 +1,78 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  user-select: none;
+  position: relative;
+}
+
+.svgCanvas {
+  flex: 1;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Tick rotates around the dial centre. The wrapper translates to the dial
+   centre; this inner group rotates within that local coordinate system. */
+.tickRotate {
+  transition: transform 600ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Bars and labels do not animate themselves — they re-render when the
+   selected temperature changes (highlight only). */
+.bar {
+  transition: fill 200ms ease-in-out;
+}
+
+.tempLabel {
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.readout {
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -1px;
+  pointer-events: none;
+}
+
+.readoutSuffix {
+  font-size: 18px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+.readoutCaption {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  fill: #94a3b8;
+  pointer-events: none;
+}
+
+.totalLabel {
+  font-size: 14px;
+  font-weight: 600;
+  fill: #1e293b;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: #555;
+  border-top: 1px solid #e0e0e0;
+  flex-shrink: 0;
+  min-height: 26px;
+}
+
+.emptyMessage {
+  color: #aaa;
+  font-style: italic;
+}
