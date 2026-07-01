@@ -15,17 +15,21 @@
 import React from "react";
 
 import { ParsedSignal } from "./engine/signalParser";
-import KMeansPreview from "./example-kmeans/KMeansPreview";
-import kmeansLibraryCode from "./example-kmeans/python/library.py?raw";
-import SVMPreview from "./example-svm/SVMPreview";
-import svmLibraryCode from "./example-svm/python/library.py?raw";
 import ThermostatPreview from "./thermostat/ThermostatPreview";
 import thermostatLibraryCode from "./thermostat/python/library.py?raw";
+import ViralPreview from "./viral/ViralPreview";
+import viralLibraryCode from "./viral/python/library.py?raw";
 
 // The handle interface every PreviewComponent must satisfy.
 // When you create a new mini-app, its forwardRef handle must implement these.
 export interface MiniAppPreviewHandle {
   handleParsedSignal: (signal: ParsedSignal) => void;
+  /**
+   * Optional: receive every raw stdout line. Use this if your mini-app
+   * prefers to parse human-readable print output rather than the
+   * structured `[TYPE] KEY {...}` signal format.
+   */
+  handleStdout?: (line: string) => void;
   reset: () => void;
   onRun: () => void;
   onClose: () => void;
@@ -55,89 +59,6 @@ export interface MiniAppDefinition {
 
 // ─── Register mini-apps here ─────────────────────────────────────────────────
 
-const KMEANS_DEFAULT_STUDENT_CODE = `\
-# K-Means Clustering Demo
-# Press Run, then use the mini-app buttons to step through the algorithm.
-# - "Initialize Centroids" places 4 starting centroids randomly among the data points.
-# - "Step" assigns each point to its nearest centroid (watch colors change),
-#   then moves each centroid to the center of its group (watch markers slide).
-# - "Play" runs all steps automatically until the centroids stop moving.
-
-from kmeans import KMeans
-
-model = KMeans(k=4)
-
-# Cluster A: tight, bottom-left
-model.add_point(1.0, 1.0)
-model.add_point(1.2, 1.5)
-model.add_point(0.8, 0.8)
-model.add_point(1.5, 1.2)
-model.add_point(1.1, 0.6)
-
-# Cluster B: sparse, top-right (spread out — centroid will drift significantly)
-model.add_point(8.0, 9.0)
-model.add_point(9.5, 7.5)
-model.add_point(6.5, 8.5)
-model.add_point(9.0, 6.0)
-model.add_point(7.0, 7.0)
-model.add_point(10.0, 9.5)
-
-# Cluster C: medium, top-left
-model.add_point(1.5, 8.0)
-model.add_point(2.0, 9.0)
-model.add_point(0.5, 7.5)
-model.add_point(2.5, 8.5)
-
-# Cluster D: bottom-right
-model.add_point(8.5, 1.5)
-model.add_point(9.0, 2.0)
-model.add_point(7.5, 1.0)
-model.add_point(9.5, 1.8)
-
-# Ambiguous middle points — will likely reassign 1-2 times before settling
-model.add_point(4.5, 4.0)
-model.add_point(5.0, 5.5)
-model.add_point(5.5, 4.5)
-model.add_point(4.0, 6.0)
-model.add_point(6.0, 5.0)
-
-model.init()`;
-
-const SVM_DEFAULT_STUDENT_CODE = `\
-# Support Vector Machine Demo
-# Press Run to train the SVM on the labeled data below.
-# After training, use the controls to explore:
-# - Drag the C slider to see how regularization changes the margin width
-#   (small C = wide margin, large C = narrow margin / fewer violations)
-# - Toggle Linear / RBF to compare a straight boundary vs. a curved one
-# - Points circled in their class color are the support vectors
-
-from svm import SVM
-
-model = SVM(C=1.0)
-
-# Class +1: upper-right cluster
-model.add_point(2.0, 3.0, label=1)
-model.add_point(3.0, 4.0, label=1)
-model.add_point(2.5, 5.0, label=1)
-model.add_point(4.0, 3.5, label=1)
-model.add_point(1.5, 4.5, label=1)
-
-# Class -1: lower-left cluster
-model.add_point(-2.0, -1.0, label=-1)
-model.add_point(-3.0, -2.0, label=-1)
-model.add_point(-1.5, -3.0, label=-1)
-model.add_point(-2.5, -0.5, label=-1)
-model.add_point(-1.0, -2.5, label=-1)
-
-# Points near the boundary — likely to become support vectors
-model.add_point(0.5, 1.0, label=1)
-model.add_point(-0.5, -0.5, label=-1)
-model.add_point(1.0, 0.0, label=1)
-model.add_point(-1.0, 0.5, label=-1)
-
-model.fit()`;
-
 const THERMOSTAT_DEFAULT_STUDENT_CODE = `\
 # Thermostat — Hill Climbing on a Dial
 # Press Run to watch your strategy turn the thermostat dial toward the
@@ -152,41 +73,56 @@ const THERMOSTAT_DEFAULT_STUDENT_CODE = `\
 #   - right   = people who prefer the temperature one degree warmer
 #               (0 if the dial is already at the maximum)
 #
-# Return "LEFT" (cooler), "RIGHT" (warmer), or "STAY" (stop here).
+# Print "LEFT" (cooler), "RIGHT" (warmer), or "STAY" (stop here).
 
 from thermostat import run
 
 
 def move(current, left, right):
     if left > current:
-        return "LEFT"
-    if right > current:
-        return "RIGHT"
-    return "STAY"
+        print("LEFT")
+    elif right > current:
+        print("RIGHT")
+    else:
+        print("STAY")
 
 
 run(move)`;
 
+const VIRAL_DEFAULT_STUDENT_CODE = `\
+# Viral — simulating a post spreading through a network
+# Press Run to watch the post spread. The full network represents the world's
+# ~5 billion social media users. The camera starts zoomed in on the first few
+# people, then zooms out as the post reaches more of the network.
+#
+# The visualization listens for print lines that look like:
+#     Day <day>: <views> views
+# So students don't need to import anything—just print in that format
+# from inside a loop, and the network animates automatically.
+
+
+def simulate(views, growth, days):
+    for i in range(days):
+        print(f"Day {i}: {views} views")
+        views = views + views * growth
+
+
+simulate(100, 1, 10)
+`;
+
 export const MINI_APP_REGISTRY: MiniAppDefinition[] = [
-  {
-    key: "kmeans",
-    label: "K-Means Clustering",
-    PreviewComponent: KMeansPreview,
-    defaultStudentCode: KMEANS_DEFAULT_STUDENT_CODE,
-    defaultLibraryCode: kmeansLibraryCode,
-  },
-  {
-    key: "svm",
-    label: "Support Vector Machine",
-    PreviewComponent: SVMPreview,
-    defaultStudentCode: SVM_DEFAULT_STUDENT_CODE,
-    defaultLibraryCode: svmLibraryCode,
-  },
   {
     key: "thermostat",
     label: "Thermostat — Hill Climbing on a Dial",
     PreviewComponent: ThermostatPreview,
     defaultStudentCode: THERMOSTAT_DEFAULT_STUDENT_CODE,
     defaultLibraryCode: thermostatLibraryCode,
+  },
+  {
+    key: "viral",
+    label: "Viral — Post Spreading Through a Network",
+    PreviewComponent: ViralPreview,
+    defaultStudentCode: VIRAL_DEFAULT_STUDENT_CODE,
+    defaultLibraryCode: viralLibraryCode,
   },
 ];

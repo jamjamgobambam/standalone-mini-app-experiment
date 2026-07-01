@@ -7,9 +7,14 @@ This file is executed by the Pyodide worker and registered as the
     from thermostat import run
 
     def move(current, left, right):
-        ...
+        print("LEFT")   # or "RIGHT" or "STAY"
 
     run(move)
+
+The student's `move` function communicates by *printing* one of
+"LEFT", "RIGHT", or "STAY" — return values are ignored. This lets
+beginners use a tool they already know (`print`) instead of learning
+`return` first.
 
 Wire format:
     [THERMOSTAT] INIT  {"min_temp": 64, "max_temp": 80,
@@ -18,7 +23,9 @@ Wire format:
     [THERMOSTAT] DONE  {}
 """
 
+import io
 import json
+from contextlib import redirect_stdout
 from enum import Enum
 
 
@@ -81,6 +88,20 @@ def _people_at(temp):
     return _PREFERENCES[temp - _MIN_TEMP]
 
 
+def _extract_decision(output: str) -> str:
+    """
+    Scan captured stdout for a direction the student printed. Returns the
+    LAST valid direction found ("LEFT", "RIGHT", or "STAY"). Defaults to
+    "STAY" when nothing recognizable was printed, which ends the run.
+    """
+    decision = "STAY"
+    for line in output.splitlines():
+        token = line.strip().upper()
+        if token in ("LEFT", "RIGHT", "STAY"):
+            decision = token
+    return decision
+
+
 # ── Student-facing API ────────────────────────────────────────────────────────
 
 def run(move):
@@ -94,14 +115,21 @@ def run(move):
         right   — number of people who prefer the temperature one degree
                   warmer (0 if the dial is already at the maximum)
 
-    Then it calls `move(current, left, right)`. The strategy should return
-    one of:
+    Then it calls `move(current, left, right)`. The strategy should
+    `print` one of:
         "LEFT"   — turn the dial one degree cooler
         "RIGHT"  — turn the dial one degree warmer
         "STAY"   — leave the dial where it is (ends the optimization)
 
-    The library keeps iterating until the strategy returns "STAY" (or any
-    value other than "LEFT"/"RIGHT"), or until 200 iterations have elapsed.
+    Stdout is captured for the duration of each `move` call, so only the
+    student's prints are inspected — the library's own signal output is
+    unaffected. If the strategy prints several direction words, the last
+    one wins. If it prints nothing recognizable, the run ends (as if
+    "STAY" had been printed).
+
+    The library keeps iterating until the strategy prints "STAY" (or
+    something other than "LEFT"/"RIGHT"), or until 200 iterations have
+    elapsed.
     """
     temp = _INITIAL_TEMP
 
@@ -124,7 +152,12 @@ def run(move):
         left = _people_at(temp - 1)
         right = _people_at(temp + 1)
 
-        decision = move(current, left, right)
+        # Capture only the student's prints; library signals still flow
+        # through the real stdout outside this block.
+        buffer = io.StringIO()
+        with redirect_stdout(buffer):
+            move(current, left, right)
+        decision = _extract_decision(buffer.getvalue())
 
         if decision == "LEFT" and temp > _MIN_TEMP:
             temp -= 1

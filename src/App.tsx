@@ -65,6 +65,10 @@ export default function App() {
     previewRef.current?.handleParsedSignal(signal);
   }, []);
 
+  const handleStdout = useCallback((line: string) => {
+    previewRef.current?.handleStdout?.(line);
+  }, []);
+
   const handleDone = useCallback(() => {
     previewRef.current?.onClose();
   }, []);
@@ -76,6 +80,7 @@ export default function App() {
 
   const {runCode, isRunning, isPyodideLoading} = usePyodide({
     onSignal: handleSignal,
+    onStdout: handleStdout,
     onDone: handleDone,
     onError: handleError,
   });
