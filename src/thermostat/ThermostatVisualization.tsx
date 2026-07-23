@@ -101,6 +101,17 @@ const ThermostatVisualization: React.FunctionComponent<Props> = ({state}) => {
     return <span>Setting: {currentTemp}°F</span>;
   })();
 
+  // Accessible name describing the dial's current state — screen readers
+  // announce this in place of the decorative SVG internals.
+  const peopleWord = peoplePreferring === 1 ? 'person' : 'people';
+  const ariaLabel = !isInitialized
+    ? 'Thermostat dial. Run your code to set the temperature.'
+    : phase === 'running'
+      ? `Thermostat dial adjusting — currently ${currentTemp} degrees Fahrenheit, preferred by ${peoplePreferring} ${peopleWord}.`
+      : phase === 'done'
+        ? `Thermostat dial set to ${currentTemp} degrees Fahrenheit, the final setting, preferred by ${peoplePreferring} ${peopleWord}.`
+        : `Thermostat dial set to ${currentTemp} degrees Fahrenheit, preferred by ${peoplePreferring} ${peopleWord}.`;
+
   // Pre-compute the bar / label positions.
   const ticks = useMemo(() => {
     if (!isInitialized) return [];
@@ -131,6 +142,8 @@ const ThermostatVisualization: React.FunctionComponent<Props> = ({state}) => {
         className={moduleStyles.svgCanvas}
         viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}
         preserveAspectRatio="xMidYMid meet"
+        role="img"
+        aria-label={ariaLabel}
       >
         {!isInitialized && (
           <text
@@ -255,7 +268,9 @@ const ThermostatVisualization: React.FunctionComponent<Props> = ({state}) => {
         )}
       </svg>
 
-      <div className={moduleStyles.status}>{status}</div>
+      <div className={moduleStyles.status} role="status" aria-live="polite">
+        {status}
+      </div>
     </div>
   );
 };

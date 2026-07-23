@@ -63,6 +63,24 @@ class _ThermostatSignalMessage:
         print(self._get_formatted_message())
 
 
+def _narrate(text: str):
+    """Announce `text` to screen-reader users.
+
+    Emits on the universal accessibility channel, which the Studio shows in its
+    Accessibility panel and pipes to an aria-live region so real screen readers
+    read it aloud. Call this whenever the visual state changes meaningfully so
+    the mini-app is usable without sight.
+    """
+    print(f'[A11Y] SAY {json.dumps({"text": text})}')
+
+
+def _people_phrase(temp: int) -> str:
+    """e.g. '9 people prefer' / '1 person prefers' — for narration."""
+    n = _people_at(temp)
+    verb = "person prefers" if n == 1 else "people prefer"
+    return f"{n} {verb}"
+
+
 # ── Hardcoded scenario ────────────────────────────────────────────────────────
 
 _MIN_TEMP = 64
@@ -143,6 +161,10 @@ def run(move):
             "start_temp": _INITIAL_TEMP,
         },
     ).send()
+    _narrate(
+        f"Thermostat started at {_INITIAL_TEMP} degrees Fahrenheit. "
+        f"{_people_phrase(_INITIAL_TEMP)} this setting."
+    )
 
     iterations = 0
     while iterations < _MAX_ITERATIONS:
@@ -165,13 +187,25 @@ def run(move):
                 _ThermostatSignalKey.TURN,
                 {"temp": temp},
             ).send()
+            _narrate(
+                f"Turned the dial cooler to {temp} degrees Fahrenheit. "
+                f"{_people_phrase(temp)} this setting."
+            )
         elif decision == "RIGHT" and temp < _MAX_TEMP:
             temp += 1
             _ThermostatSignalMessage(
                 _ThermostatSignalKey.TURN,
                 {"temp": temp},
             ).send()
+            _narrate(
+                f"Turned the dial warmer to {temp} degrees Fahrenheit. "
+                f"{_people_phrase(temp)} this setting."
+            )
         else:
             break
 
     _ThermostatSignalMessage(_ThermostatSignalKey.DONE, {}).send()
+    _narrate(
+        f"Finished. The dial is set to {temp} degrees Fahrenheit, "
+        f"the setting {_people_phrase(temp)}."
+    )
