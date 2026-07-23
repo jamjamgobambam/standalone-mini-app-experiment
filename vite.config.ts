@@ -76,4 +76,12 @@ function fileWriteBack(): Plugin {
 
 export default defineConfig({
   plugins: [react(), fileWriteBack()],
+  server: {
+    // Bind all interfaces and use Railway's assigned port when present.
+    host: true,
+    port: process.env.PORT ? Number(process.env.PORT) : undefined,
+    // Accept the dynamic Railway public hostname (dev server blocks unknown
+    // hosts by default). Fine for an internal prototype.
+    allowedHosts: true,
+  },
 });
