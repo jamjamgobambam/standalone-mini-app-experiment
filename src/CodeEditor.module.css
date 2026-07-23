@@ -1,0 +1,92 @@
+/* Scrollable container — the editor grows with content and scrolls here. */
+.wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: var(--editor-bg);
+}
+
+.editor {
+  min-height: 100%;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--editor-fg);
+  tab-size: 4;
+}
+
+/* react-simple-code-editor sets inline styles on these; keep them aligned so
+   the textarea caret sits exactly over the highlighted text. */
+.textarea,
+.pre {
+  font-family: var(--font-mono) !important;
+  font-size: 12.5px !important;
+  line-height: 1.6 !important;
+  tab-size: 4 !important;
+}
+
+.textarea {
+  outline: none;
+}
+
+.textarea::selection {
+  background: var(--editor-selection);
+}
+
+/* ── Prism token colors (Catppuccin-style, matches --editor-bg/fg) ── */
+.pre :global(.token.comment),
+.pre :global(.token.prolog),
+.pre :global(.token.doctype),
+.pre :global(.token.cdata) {
+  color: #6c7086;
+  font-style: italic;
+}
+
+.pre :global(.token.string),
+.pre :global(.token.triple-quoted-string) {
+  color: #a6e3a1;
+}
+
+.pre :global(.token.keyword) {
+  color: #cba6f7;
+}
+
+.pre :global(.token.boolean),
+.pre :global(.token.number) {
+  color: #fab387;
+}
+
+.pre :global(.token.function) {
+  color: #89b4fa;
+}
+
+.pre :global(.token.builtin),
+.pre :global(.token.class-name) {
+  color: #f9e2af;
+}
+
+.pre :global(.token.decorator),
+.pre :global(.token.operator),
+.pre :global(.token.punctuation) {
+  color: #cdd6f4;
+}
+
+/* Extra tokens for TS / TSX / CSS */
+.pre :global(.token.tag),
+.pre :global(.token.selector),
+.pre :global(.token.property) {
+  color: #f38ba8;
+}
+
+.pre :global(.token.attr-name) {
+  color: #fab387;
+}
+
+.pre :global(.token.attr-value) {
+  color: #a6e3a1;
+}
+
+.pre :global(.token.constant),
+.pre :global(.token.symbol) {
+  color: #f9e2af;
+}

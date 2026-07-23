@@ -9,10 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "axe-core": "^4.12.1",
+    "prismjs": "^1.30.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-simple-code-editor": "^0.14.1"
   },
   "devDependencies": {
+    "@types/prismjs": "^1.26.6",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "@vitejs/plugin-react": "^4.2.0",
